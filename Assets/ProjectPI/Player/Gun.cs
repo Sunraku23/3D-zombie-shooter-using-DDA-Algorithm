@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Gun : MonoBehaviour
 {
@@ -15,11 +16,14 @@ public class Gun : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButton(0) && Time.time >= nextFireTime)
+        bool isFiring = Mouse.current.leftButton.isPressed;
+
+        if (isFiring && Time.time >= nextFireTime)
         {
             nextFireTime = Time.time + fireRate;
             Shoot();
         }
+
     }
 
     void Shoot()

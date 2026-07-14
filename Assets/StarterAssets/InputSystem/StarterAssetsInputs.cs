@@ -31,7 +31,10 @@ namespace StarterAssets
 			if(cursorInputForLook)
 			{
 				LookInput(value.Get<Vector2>());
+
 			}
+
+
 		}
 
 		public void OnJump(InputValue value)
@@ -49,14 +52,15 @@ namespace StarterAssets
 		public void MoveInput(Vector2 newMoveDirection)
 		{
 			move = newMoveDirection;
-		} 
-
-		public void LookInput(Vector2 newLookDirection)
-		{
-			look = newLookDirection;
 		}
 
-		public void JumpInput(bool newJumpState)
+        public void LookInput(Vector2 newLookDirection)
+        {
+            look = newLookDirection;
+            Debug.Log("Look input diterima: " + newLookDirection); // tambahan sementara buat debug
+        }
+
+        public void JumpInput(bool newJumpState)
 		{
 			jump = newJumpState;
 		}
@@ -75,6 +79,8 @@ namespace StarterAssets
 		{
 			Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
 		}
+
+
 	}
 	
 }
