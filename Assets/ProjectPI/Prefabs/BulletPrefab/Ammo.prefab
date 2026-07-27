@@ -207,4 +207,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b2e905f3d81b0d47b555be43e644959, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BulletScript
+  vfxred: {fileID: 613433886817584985, guid: da66f2f992be3814bb622596d31190bb, type: 3}
+  vfxgreen: {fileID: 613433886817584985, guid: 782b307ebe180174680a1658d0b415b9, type: 3}
   speed: 10

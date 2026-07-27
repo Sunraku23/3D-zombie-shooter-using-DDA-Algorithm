@@ -2,8 +2,12 @@ using UnityEngine;
 
 public class BulletScript : MonoBehaviour
 {
-    [SerializeField] private float speed = 10f; // exposed so you can tune it in Inspector
+    [SerializeField] private Transform vfxred;
+    [SerializeField] private Transform vfxgreen;
+
+    [SerializeField] private float speed = 40f; // exposed so you can tune it in Inspector
     private Rigidbody bulletRb;
+    
 
     private void Awake()
     {
@@ -18,6 +22,6 @@ public class BulletScript : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Destroy(gameObject); // destroy the whole bullet object, not just the Rigidbody
+          Destroy(gameObject); // destroy the whole bullet object, not just the Rigidbody
     }
 }
