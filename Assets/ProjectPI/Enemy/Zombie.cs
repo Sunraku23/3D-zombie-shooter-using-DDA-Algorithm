@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public class ZombieAI : MonoBehaviour, IDamageable
+public class Zombie : MonoBehaviour, IDamageable
 {
     private enum State { Chase, Attack, Dead }
 
@@ -20,7 +20,7 @@ public class ZombieAI : MonoBehaviour, IDamageable
 
     private NavMeshAgent agent;
     private State currentState = State.Chase;
-    private int currentHealth;
+    private float currentHealth;
     private float nextAttackTime;
 
     // BARU: cache nama parameter jadi hash int, lebih efisien daripada pakai string tiap frame
@@ -73,7 +73,7 @@ public class ZombieAI : MonoBehaviour, IDamageable
         }
     }
 
-    public void TakeDamage(int amount)
+    public void TakeDamage(float amount)
     {
         currentHealth -= amount;
         Debug.Log("Zombie HP: " + currentHealth);

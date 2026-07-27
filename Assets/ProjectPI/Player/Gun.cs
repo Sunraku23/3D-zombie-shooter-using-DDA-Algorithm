@@ -1,47 +1,48 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class Gun : MonoBehaviour
 {
-    [Header("Gun Settings")]
-    [SerializeField] private int damage = 20;
-    [SerializeField] private float range = 50f;
-    [SerializeField] private float fireRate = 0.3f; // jeda antar tembakan
-    [SerializeField] private LayerMask hittableLayers;
-
     [Header("References")]
-    [SerializeField] private Camera playerCamera; // drag Main Camera di sini
+    [SerializeField] private Camera aimCamera;      // drag your Main Camera here
+    [SerializeField] private Animator playerAnimator; // drag the player's Animator
 
-    private float nextFireTime = 0f;
+    [Header("Gun Settings")]
+    [SerializeField] private float range = 100f;
+    [SerializeField] private float damage = 20f;
+    [SerializeField] private LayerMask hittableLayers; // set to exclude the Player layer
 
     void Update()
     {
-        bool isFiring = Mouse.current.leftButton.isPressed;
-
-        if (isFiring && Time.time >= nextFireTime)
+        // Legacy Input Manager — left click to fire
+        if (Input.GetButtonDown("Fire1"))
         {
-            nextFireTime = Time.time + fireRate;
             Shoot();
         }
-
     }
 
     void Shoot()
     {
-        // Raycast dari tengah layar (crosshair) ke depan
-        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-        RaycastHit hit;
-        Debug.DrawRay(ray.origin, ray.direction * range, Color.red, 1f);
+        // Trigger the fire animation regardless of hit/miss
+        playerAnimator.SetTrigger("Shoot");
 
-        if (Physics.Raycast(ray, out hit, range, hittableLayers))
+        // Ray starts at the CAMERA, not the gun muzzle
+        Ray ray = new Ray(aimCamera.transform.position, aimCamera.transform.forward);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, range, hittableLayers))
         {
-            Debug.Log("Kena: " + hit.collider.name);
-
-            IDamageable target = hit.collider.GetComponent<IDamageable>();
-            if (target != null)
+            Debug.DrawLine(ray.origin, hit.point, Color.red, 0.5f);
+            // Try to damage whatever we hit, if it can take damage
+            if (hit.collider.TryGetComponent<IDamageable>(out var damageable))
             {
-                target.TakeDamage(damage);
+                // Draw a RED line from camera to the actual hit point (confirms real contact)
+
+                damageable.TakeDamage(damage);
             }
+        }
+        else
+        {
+            // Draw a GRAY line for the full range (confirms the ray fired but hit nothing)
+            Debug.DrawRay(ray.origin, ray.direction * range, Color.gray, 0.5f);
         }
     }
 }
