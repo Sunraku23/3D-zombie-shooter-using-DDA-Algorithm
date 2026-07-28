@@ -32,6 +32,8 @@ public class Zombie : MonoBehaviour, IDamageable
     {
         agent = GetComponent<NavMeshAgent>();
         currentHealth = maxHealth;
+
+        player = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
     void Update()
@@ -84,6 +86,8 @@ public class Zombie : MonoBehaviour, IDamageable
             agent.isStopped = true;
             animator.SetBool(DeadParam, true); // BARU: masuk state Die, stay disana
             Debug.Log("Zombie died");
+
+            WaveSpawner.Instance?.OnZombieDied();
 
             Destroy(gameObject, destroyDelay); // BARU: hapus objek setelah animasi Die selesai diputar
         }

@@ -9,19 +9,24 @@ public class ThirdPersonshootercontroller : MonoBehaviour
     [SerializeField]
     private CinemachineCamera aimVirtualcamera;
     [SerializeField]
-    private float PlayerSens;
+    private float playerSens;
     [SerializeField]
-    private float Aimsens;
+    private float aimSens;
     [SerializeField]
     private LayerMask aimColiderMask = new LayerMask();
     [SerializeField]
     private Transform debugTransform;
     [SerializeField]
     private Transform bullet;
-    [SerializeField]
+    [SerializeField] 
     private Transform bulletSpawner;
-    [SerializeField] private Transform vfxred;
-    [SerializeField] private Transform vfxgreen;
+    [SerializeField] 
+    private Transform vfxRed;
+    [SerializeField] 
+    private Transform vfxGreen;
+    [SerializeField]
+    private float bulletDamage = 10f;
+
 
     private StarterAssetsInputs starterAssetsInputs;
     private ThirdPersonController thirdPersonController;
@@ -54,7 +59,7 @@ public class ThirdPersonshootercontroller : MonoBehaviour
         if (starterAssetsInputs.aim)
         {
             aimVirtualcamera.gameObject.SetActive(true);
-            thirdPersonController.Setsensivity(Aimsens);
+            thirdPersonController.Setsensivity(aimSens);
             thirdPersonController.SetRotateOnmove(false);
             animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 1f, Time.deltaTime * 10f));
 
@@ -67,7 +72,7 @@ public class ThirdPersonshootercontroller : MonoBehaviour
         else
         {
             aimVirtualcamera.gameObject.SetActive(false);
-            thirdPersonController.Setsensivity(PlayerSens);
+            thirdPersonController.Setsensivity(playerSens);
             thirdPersonController.SetRotateOnmove(true);
             animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 0f, Time.deltaTime * 10f));
         }
@@ -78,16 +83,20 @@ public class ThirdPersonshootercontroller : MonoBehaviour
             {
                 if (hitTransfrom.GetComponent<Target>() != null)
                 {
-                    Instantiate(vfxgreen, raycastHit.point, Quaternion.identity);
+                    Instantiate(vfxGreen, raycastHit.point, Quaternion.identity);
                 }
                 else
                 {
-                    Instantiate(vfxred, raycastHit.point, Quaternion.identity);
+                    Instantiate(vfxRed, raycastHit.point, Quaternion.identity);
+                }
+
+
+                IDamageable hit = hitTransfrom.GetComponent<IDamageable>();
+                if (hit != null) 
+                {
+                    hit.TakeDamage(bulletDamage);
                 }
             }
-
-            //Vector3 aimDir = (mouseWorldPosition - bulletSpawner.position).normalized;
-            //Instantiate(bullet, bulletSpawner.position, Quaternion.LookRotation(aimDir, Vector3.up));
             starterAssetsInputs.Shoot = false;
         }
 
