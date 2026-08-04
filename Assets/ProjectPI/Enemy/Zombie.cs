@@ -33,7 +33,9 @@ public class Zombie : MonoBehaviour, IDamageable
         agent = GetComponent<NavMeshAgent>();
         currentHealth = maxHealth;
 
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        GameObject playerobject = GameObject.FindGameObjectWithTag("Player");
+        player = playerobject.transform;
+        playerHealth = playerobject.GetComponent<PlayerHealth>;
     }
 
     void Update()
