@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 
 public class ThirdPersonshootercontroller : MonoBehaviour
 {
+    
     [SerializeField]
     private CinemachineCamera aimVirtualcamera;
     [SerializeField]
@@ -25,7 +26,7 @@ public class ThirdPersonshootercontroller : MonoBehaviour
     [SerializeField] 
     private Transform vfxGreen;
     [SerializeField]
-    private float bulletDamage = 10f;
+    private int bulletDamage = 10;
 
 
     private StarterAssetsInputs starterAssetsInputs;

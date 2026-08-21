@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour, IDamageable
 {
@@ -15,6 +16,14 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     public void TakeDamage(int amount)
     {
-        // TODO: kurangin currentHealth, cek kalau <= 0
+        currentHealth -= amount ;
+        currentHealth = Mathf.Max(currentHealth, 0); // biar gak minus, jelek buat UI health bar nanti
+
+        Debug.Log("Player HP: " + currentHealth);
+
+        if (currentHealth <= 0)
+        {
+            OnPlayerDied?.Invoke(); // fire event, siapapun yg subscribe akan dikasih tau
+        }
     }
 }

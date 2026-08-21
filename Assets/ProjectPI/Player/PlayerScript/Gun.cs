@@ -8,7 +8,7 @@ public class Gun : MonoBehaviour
 
     [Header("Gun Settings")]
     [SerializeField] private float range = 100f;
-    [SerializeField] private float damage = 20f;
+    [SerializeField] private int damage = 20;
     [SerializeField] private LayerMask hittableLayers; // set to exclude the Player layer
 
     void Update()

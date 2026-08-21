@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -23,6 +24,8 @@ public class Zombie : MonoBehaviour, IDamageable
     private float currentHealth;
     private float nextAttackTime;
 
+    private PlayerHealth playerHealth;
+
     // BARU: cache nama parameter jadi hash int, lebih efisien daripada pakai string tiap frame
     private static readonly int SpeedParam = Animator.StringToHash("Speed");
     private static readonly int AttackParam = Animator.StringToHash("Attack");
@@ -35,7 +38,7 @@ public class Zombie : MonoBehaviour, IDamageable
 
         GameObject playerobject = GameObject.FindGameObjectWithTag("Player");
         player = playerobject.transform;
-        playerHealth = playerobject.GetComponent<PlayerHealth>;
+        playerHealth = playerobject.GetComponent<PlayerHealth>();
     }
 
     void Update()
@@ -74,10 +77,12 @@ public class Zombie : MonoBehaviour, IDamageable
             animator.SetTrigger(AttackParam); // BARU: trigger animasi attack, one-shot
             Debug.Log("Zombie attack player for " + attackDamage);
             // TODO: panggil player.TakeDamage() setelah Player punya IDamageable juga
+
+            playerHealth?.TakeDamage(attackDamage);
         }
     }
 
-    public void TakeDamage(float amount)
+    public void TakeDamage(int amount)
     {
         currentHealth -= amount;
         Debug.Log("Zombie HP: " + currentHealth);
