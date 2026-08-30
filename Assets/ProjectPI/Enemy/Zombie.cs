@@ -84,6 +84,7 @@ public class Zombie : MonoBehaviour, IDamageable
 
     public void TakeDamage(int amount)
     {
+        if(currentState == State.Dead) return;
         currentHealth -= amount;
         Debug.Log("Zombie HP: " + currentHealth);
 

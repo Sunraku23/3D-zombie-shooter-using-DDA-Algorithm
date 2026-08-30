@@ -26,19 +26,15 @@ public class ThirdPersonshootercontroller : MonoBehaviour
     [SerializeField] 
     private Transform vfxGreen;
     [SerializeField]
-    private int bulletDamage = 10;
-
+    private int  bulletDamage = 10;
 
     private StarterAssetsInputs starterAssetsInputs;
     private ThirdPersonController thirdPersonController;
     private Animator animator;
 
-  
-
-
-
-    private void Awake()
+     private void Awake()
     {
+        // Taking reference from game object 
         starterAssetsInputs = GetComponent<StarterAssetsInputs>();
         thirdPersonController = GetComponent<ThirdPersonController>();
         animator = GetComponent<Animator>();
@@ -46,6 +42,7 @@ public class ThirdPersonshootercontroller : MonoBehaviour
 
     private void Update()
     {
+        //Handling crosshair posisition and raycast
         Vector3 mouseWorldPosition = Vector3.zero;
 
         Vector2 screenCenterPost = new Vector2(Screen.width /2f, Screen.height /2f);
@@ -57,8 +54,11 @@ public class ThirdPersonshootercontroller : MonoBehaviour
             mouseWorldPosition = raycastHit.point;
             hitTransfrom = raycastHit.transform;
         }
+
+        // Handle aiming transition
         if (starterAssetsInputs.aim)
         {
+            // aiming
             aimVirtualcamera.gameObject.SetActive(true);
             thirdPersonController.Setsensivity(aimSens);
             thirdPersonController.SetRotateOnmove(false);
@@ -72,6 +72,7 @@ public class ThirdPersonshootercontroller : MonoBehaviour
         }
         else
         {
+            //back to normal
             aimVirtualcamera.gameObject.SetActive(false);
             thirdPersonController.Setsensivity(playerSens);
             thirdPersonController.SetRotateOnmove(true);
