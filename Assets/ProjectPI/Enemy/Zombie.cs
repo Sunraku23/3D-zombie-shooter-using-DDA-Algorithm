@@ -11,6 +11,9 @@ public class Zombie : MonoBehaviour, IDamageable
     [SerializeField] private int attackDamage = 10;
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private float attackCooldown = 1.5f;
+    private float configuredSpeed = -1f; // BARU: -1 = "belum diset dari DDA, pakai default prefab"
+
+
 
     [Header("References")]
     [SerializeField] private Transform player;
@@ -31,11 +34,19 @@ public class Zombie : MonoBehaviour, IDamageable
     private static readonly int AttackParam = Animator.StringToHash("Attack");
     private static readonly int DeadParam = Animator.StringToHash("IsDead");
 
+    // BARU: dipanggil dari WaveSpawner tepat setelah Instantiate, SEBELUM Start() sempat jalan
+    public void SetStats(float health, float speed)
+    {
+        maxHealth = Mathf.RoundToInt(health); // maxHealth = int, DifficultyPreset.zombieHealth = float, perlu di-cast
+        configuredSpeed = speed;
+    }
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         currentHealth = maxHealth;
 
+        if (configuredSpeed > 0) agent.speed = configuredSpeed; // BARU: apply speed dari preset, kalau ada
         GameObject playerobject = GameObject.FindGameObjectWithTag("Player");
         player = playerobject.transform;
         playerHealth = playerobject.GetComponent<PlayerHealth>();

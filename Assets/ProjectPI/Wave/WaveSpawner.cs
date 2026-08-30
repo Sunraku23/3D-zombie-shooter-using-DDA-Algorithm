@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class WaveSpawner : MonoBehaviour
 {
-    // === Singleton ===
     public static WaveSpawner Instance { get; private set; }
 
     [Header("Spawn Setup")]
@@ -13,17 +12,26 @@ public class WaveSpawner : MonoBehaviour
 
     [Header("Wave Settings")]
     [SerializeField] private int zombiesPerWave = 5;
-    [SerializeField] private float spawnInterval = 1.5f; // jeda antar spawn dalam 1 wave
+    [SerializeField] private float spawnInterval = 1.5f;
+    [SerializeField] private int maxWaves = 8; // BARU: batas wave, sesi "menang" kalau tercapai
+
+    [Header("DDA / Difficulty Presets")]
+    [SerializeField] private DifficultyPreset[] difficultyPresets; // index 0=Easy, 1=Normal, 2=Hard
+    private DifficultyPreset currentPreset; // BARU: preset yang lagi aktif, diset dari DDAController
 
     private int currentWave = 0;
     private int zombiesRemainingToSpawn;
     private int zombiesAlive;
+    private int totalZombiesKilled = 0; // BARU: akumulasi SELURUH sesi (beda dari zombiesAlive yang per-wave)
+
+    // BARU: expose read-only ke luar — dibutuhin UI end-screen & GameplayLogger nanti, tanpa buka akses tulis dari luar
+    public int CurrentWave => currentWave;
+    public int TotalZombiesKilled => totalZombiesKilled;
 
     void Awake()
     {
         if (Instance != null && Instance != this)
         {
-            // Udah ada WaveSpawner lain duluan -> ini duplikat, hancurin
             Destroy(gameObject);
             return;
         }
@@ -32,6 +40,17 @@ public class WaveSpawner : MonoBehaviour
 
     void Start()
     {
+        // BARU: validasi spawnPoints sebelum mulai apapun
+        if (spawnPoints == null || spawnPoints.Count == 0)
+        {
+            Debug.LogError("WaveSpawner: spawnPoints kosong! Isi minimal 1 di Inspector.");
+            return; // stop di sini, jangan lanjut StartNextWave() yang bakal crash
+        }
+        
+    }
+
+    public void BeginFirstWave() // BARU
+    {
         StartNextWave();
     }
 
@@ -39,10 +58,8 @@ public class WaveSpawner : MonoBehaviour
     {
         currentWave++;
         zombiesRemainingToSpawn = zombiesPerWave;
-        zombiesAlive = 0;
-
+        zombiesAlive = 0;   
         Debug.Log("Wave " + currentWave + " dimulai! Total zombie: " + zombiesPerWave);
-
         StartCoroutine(SpawnWaveRoutine());
     }
 
@@ -56,23 +73,52 @@ public class WaveSpawner : MonoBehaviour
         }
     }
 
+    public void ApplyDifficultyPreset(int level)
+    {
+        if (difficultyPresets == null || level < 0 || level >= difficultyPresets.Length)
+        {
+            Debug.LogWarning("ApplyDifficultyPreset: level di luar range, pakai index 1 (Normal).");
+            level = 1;
+        }
+
+        currentPreset = difficultyPresets[level]; // BARU
+        zombiesPerWave = currentPreset.zombieCount;
+        spawnInterval = currentPreset.spawnInterval;
+    }
+
     void SpawnZombie()
     {
-        // Pilih spawn point secara acak dari list
         Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
-        Instantiate(zombiePrefab, spawnPoint.position, spawnPoint.rotation);
+        GameObject zombieObj = Instantiate(zombiePrefab, spawnPoint.position, spawnPoint.rotation); // BARU: simpen hasil Instantiate
+
+        if (currentPreset != null)
+        {
+            Zombie zombie = zombieObj.GetComponent<Zombie>(); // BARU: ambil komponen Zombie dari object yang baru dibuat
+            zombie.SetStats(currentPreset.zombieHealth, currentPreset.zombieSpeed);
+        }
+
         zombiesAlive++;
     }
 
-    // Dipanggil dari ZombieAI.cs pas zombie itu mati
     public void OnZombieDied()
     {
         zombiesAlive--;
+        totalZombiesKilled++; // BARU: hitung total kill sepanjang sesi
 
-        // Kalau semua zombie di wave ini udah mati DAN gak ada lagi yang nunggu spawn -> wave selesai
         if (zombiesAlive <= 0 && zombiesRemainingToSpawn <= 0)
         {
-            StartNextWave();
+            GameplayLogger.Instance.LogWave(currentWave); // BARU — log dulu SEBELUM cek menang/lanjut
+            if (currentWave >= maxWaves)
+            {
+                Debug.Log("Semua wave selesai — sesi harusnya berakhir (menang)");
+                // TODO: panggil GameManager di sini — sengaja BELUM gue tulis,
+                GameManager.Instance.EndGame(true); // BARU — trigger victory
+                // gue butuh liat GameState enum & SetState() versi asli lo dulu
+            }
+            else
+            {
+                StartNextWave();
+            }
         }
     }
 }

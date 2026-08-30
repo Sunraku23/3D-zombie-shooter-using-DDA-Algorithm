@@ -27,6 +27,13 @@ public class ThirdPersonshootercontroller : MonoBehaviour
     private Transform vfxGreen;
     [SerializeField]
     private int  bulletDamage = 10;
+    [Header("Accuracy Tracking")]
+    private int shotsFired = 0;
+    private int shotsHit = 0;
+
+    // expose read-only, dibutuhin GameplayLogger nanti
+    public int ShotsFired => shotsFired;
+    public int ShotsHit => shotsHit;
 
     private StarterAssetsInputs starterAssetsInputs;
     private ThirdPersonController thirdPersonController;
@@ -81,6 +88,8 @@ public class ThirdPersonshootercontroller : MonoBehaviour
 
         if (starterAssetsInputs.Shoot)
         {
+            shotsFired++; // BARU — nembak = fired, di luar ring atau nggak tetep dihitung
+
             if (hitTransfrom != null)
             {
                 if (hitTransfrom.GetComponent<Target>() != null)
@@ -91,16 +100,17 @@ public class ThirdPersonshootercontroller : MonoBehaviour
                 {
                     Instantiate(vfxRed, raycastHit.point, Quaternion.identity);
                 }
-
-
                 IDamageable hit = hitTransfrom.GetComponent<IDamageable>();
-                if (hit != null) 
+                if (hit != null)
                 {
                     hit.TakeDamage(bulletDamage);
+                    shotsHit++; // BARU — cuma naik kalau beneran kena sesuatu yang bisa didamage
                 }
+                Debug.Log($"{shotsHit}/{shotsFired}");
             }
             starterAssetsInputs.Shoot = false;
         }
 
+        //Debug.Log(GameManager.Instance.TimeSurvived);
     }
 }

@@ -6,6 +6,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     [SerializeField] private int maxHealth = 100;
     private int currentHealth;
 
+    public int CurrentHealth => currentHealth; // BARU
+    public bool IsDead => currentHealth <= 0;  // BARU — dipake buat kolom 'deaths' (0/1)
     // event: siapapun bisa subscribe tanpa PlayerHealth perlu tau siapa mereka
     public event Action OnPlayerDied;
 

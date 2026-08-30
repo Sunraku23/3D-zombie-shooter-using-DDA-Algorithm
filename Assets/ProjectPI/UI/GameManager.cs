@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,15 +12,24 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject mainMenuPanel;
     [SerializeField] private GameObject crosshair;
     [SerializeField] private GameObject gameOverPanel;
+    [SerializeField] private TextMeshProUGUI gameOverText; // BARU — drag Text (TMP) di dalam GameOverPanel
+
+    private float gameStartTime; // BARU
+
+
 
     void Awake()
     {
-        Instance = this; // Singleton, sama kayak WaveSpawner
+        Instance = this;
     }
 
     void Start()
     {
         SetState(GameState.MainMenu);
+
+        // BARU — subscribe ke event kematian player, sama pattern kayak Zombie.cs cari PlayerHealth
+        PlayerHealth playerHealth = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerHealth>();
+        playerHealth.OnPlayerDied += () => EndGame(false);
     }
 
     void SetState(GameState newState)
@@ -30,15 +40,32 @@ public class GameManager : MonoBehaviour
         crosshair.SetActive(newState == GameState.Playing);
         gameOverPanel.SetActive(newState == GameState.GameOver);
 
-        // freeze/unfreeze seluruh scene
         Time.timeScale = (newState == GameState.Playing) ? 1f : 0f;
+
+        // BARU
+        Cursor.visible = (newState != GameState.Playing);
+        Cursor.lockState = (newState == GameState.Playing) ? CursorLockMode.Locked : CursorLockMode.None;
     }
 
-    public void StartGame() => SetState(GameState.Playing); // dipanggil tombol Start
+    // BARU — satu pintu masuk buat "game selesai", entah menang atau kalah
+    public void EndGame(bool won)
+    {
+        gameOverText.text = won ? "You Survived!" : "You Died";
+        SetState(GameState.GameOver);
+    }
+
+    public void StartGame()
+    {
+        SetState(GameState.Playing);
+        gameStartTime = Time.time; // BARU — catet jam mulai
+        WaveSpawner.Instance.BeginFirstWave(); // BARU
+    }
+
+    public float TimeSurvived => Time.time - gameStartTime;
 
     public void RestartGame()
     {
-        Time.timeScale = 1f; // WAJIB reset dulu sebelum reload, atau scene baru ikut freeze
+        Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
