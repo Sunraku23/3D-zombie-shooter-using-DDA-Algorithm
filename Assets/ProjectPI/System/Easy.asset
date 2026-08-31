@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57a18b12f2930ad4bb191908cb2a0d14, type: 3}
   m_Name: Easy
   m_EditorClassIdentifier: Assembly-CSharp::DifficultyPreset
-  zombieCount: 3
-  zombieSpeed: 3
-  zombieHealth: 50
+  zombieCount: 4
+  zombieSpeed: 2.5
+  zombieHealth: 70
   spawnInterval: 2

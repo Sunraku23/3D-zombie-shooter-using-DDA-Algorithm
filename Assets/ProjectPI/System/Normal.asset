@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Normal
   m_EditorClassIdentifier: Assembly-CSharp::DifficultyPreset
   zombieCount: 5
-  zombieSpeed: 4
+  zombieSpeed: 3.5
   zombieHealth: 100
-  spawnInterval: 2
+  spawnInterval: 1.5

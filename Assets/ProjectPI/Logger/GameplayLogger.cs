@@ -8,6 +8,7 @@ public class GameplayLogger : MonoBehaviour
     private string filePath;
     private ThirdPersonshootercontroller playerShooter; // referensi ke accuracy counter
     private PlayerHealth playerHealth;
+    private string csvPath;
 
     void Awake()
     {
@@ -21,6 +22,7 @@ public class GameplayLogger : MonoBehaviour
         playerShooter = player.GetComponent<ThirdPersonshootercontroller>();
         playerHealth = player.GetComponent<PlayerHealth>();
 
+        csvPath = Path.Combine(Application.persistentDataPath, "gameplay_log.csv");
         // header ditulis sekali tiap sesi mulai — timpa file lama (lihat catatan di bawah)
         File.WriteAllText(filePath, "wave,kills_per_minute,accuracy,health_remaining,deaths,time_survived\n");
         //Debug.Log("Log file location: " + filePath);

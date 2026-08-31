@@ -84,6 +84,7 @@ public class WaveSpawner : MonoBehaviour
         currentPreset = difficultyPresets[level]; // BARU
         zombiesPerWave = currentPreset.zombieCount;
         spawnInterval = currentPreset.spawnInterval;
+        Debug.Log($"Preset diterapkan: level={level}, health={currentPreset.zombieHealth}, speed={currentPreset.zombieSpeed}");
     }
 
     void SpawnZombie()
@@ -100,25 +101,29 @@ public class WaveSpawner : MonoBehaviour
         zombiesAlive++;
     }
 
+    private bool waveTransitionInProgress = false; // lapisan kedua, backstop kalau Zombie.cs kelewat kena bug lama
+
     public void OnZombieDied()
     {
         zombiesAlive--;
-        totalZombiesKilled++; // BARU: hitung total kill sepanjang sesi
+        totalZombiesKilled++;
+
+        if (waveTransitionInProgress) return; // wave ini udah diproses, abaikan panggilan susulan
 
         if (zombiesAlive <= 0 && zombiesRemainingToSpawn <= 0)
         {
-            GameplayLogger.Instance.LogWave(currentWave); // BARU — log dulu SEBELUM cek menang/lanjut
-            if (currentWave >= maxWaves)
+            waveTransitionInProgress = true;
+            GameplayLogger.Instance.LogWave(currentWave);
+
+            bool isLastWave = currentWave >= maxWaves;
+            WaveTransitionUI.Instance.OnWaveComplete(currentWave, () =>
             {
-                Debug.Log("Semua wave selesai — sesi harusnya berakhir (menang)");
-                // TODO: panggil GameManager di sini — sengaja BELUM gue tulis,
-                GameManager.Instance.EndGame(true); // BARU — trigger victory
-                // gue butuh liat GameState enum & SetState() versi asli lo dulu
-            }
-            else
-            {
-                StartNextWave();
-            }
+                waveTransitionInProgress = false; // reset buat wave berikutnya
+                if (isLastWave)
+                    GameManager.Instance.EndGame(true);
+                else
+                    StartNextWave();
+            });
         }
     }
 }

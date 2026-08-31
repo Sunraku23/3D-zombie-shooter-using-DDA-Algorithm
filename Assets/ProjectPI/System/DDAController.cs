@@ -9,40 +9,31 @@ public class DDAResult
 
 public class DDAController : MonoBehaviour
 {
-    [SerializeField] private WaveSpawner waveSpawner;
-
-
-
-    private DDAResult LoadDDAResult()
-    {
-        string path = Application.persistentDataPath + "/dda_output.json";
-
-        try
-        {
-            string json = File.ReadAllText(path);
-            DDAResult result = JsonUtility.FromJson<DDAResult>(json);
-            return result;
-        }
-        catch (FileNotFoundException)
-        {
-            Debug.LogWarning("dda_output.json tidak ditemukan, pakai preset Normal default.");
-            return new DDAResult { difficulty_level = 1 }; // 1 = normal
-        }
-
-    }
+    public static DDAController Instance;
+    void Awake() => Instance = this;
 
     private void Start()
     {
-        DDAResult result = LoadDDAResult();
-        ApplyDifficulty(result.difficulty_level);
-        Debug.Log(Application.persistentDataPath);
+        Debug.Log("Persistent path: " + Application.persistentDataPath);
+        ReloadDifficulty();
     }
 
-
-
-    private void ApplyDifficulty(int level)
+    public void ReloadDifficulty()
     {
-        // TODO: suruh waveSpawner ganti preset index
-        waveSpawner.ApplyDifficultyPreset(level);
+        int level = 1; // fallback Normal
+        try
+        {
+            string path = Path.Combine(Application.persistentDataPath, "dda_output.json");
+            var data = JsonUtility.FromJson<DDAResult>(File.ReadAllText(path));
+            level = data.difficulty_level;
+        }
+        catch (FileNotFoundException)
+        {
+            Debug.Log("dda_output.json belum ada, pakai Normal.");
+        }
+        WaveSpawner.Instance.ApplyDifficultyPreset(level);
     }
+
+    [ContextMenu("TEST: Reload Difficulty")] // buat step 2 testing kemarin
+    private void TestReload() => ReloadDifficulty();
 }
