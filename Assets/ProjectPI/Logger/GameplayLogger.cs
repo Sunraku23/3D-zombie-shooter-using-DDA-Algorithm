@@ -23,7 +23,7 @@ public class GameplayLogger : MonoBehaviour
 
         // header ditulis sekali tiap sesi mulai — timpa file lama (lihat catatan di bawah)
         File.WriteAllText(filePath, "wave,kills_per_minute,accuracy,health_remaining,deaths,time_survived\n");
-        Debug.Log("Log file location: " + filePath);
+        //Debug.Log("Log file location: " + filePath);
     }
 
     public void LogWave(int waveNumber)

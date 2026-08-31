@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 57a18b12f2930ad4bb191908cb2a0d14, type: 3}
-  m_Name: NewDifficultyPreset
+  m_Name: Easy
   m_EditorClassIdentifier: Assembly-CSharp::DifficultyPreset
-  zombieCount: 5
-  zombieSpeed: 3.5
-  zombieHealth: 100
+  zombieCount: 3
+  zombieSpeed: 3
+  zombieHealth: 50
   spawnInterval: 2

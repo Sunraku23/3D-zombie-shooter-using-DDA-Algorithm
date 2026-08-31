@@ -106,7 +106,7 @@ public class ThirdPersonshootercontroller : MonoBehaviour
                     hit.TakeDamage(bulletDamage);
                     shotsHit++; // BARU — cuma naik kalau beneran kena sesuatu yang bisa didamage
                 }
-                Debug.Log($"{shotsHit}/{shotsFired}");
+                //Debug.Log($"{shotsHit}/{shotsFired}");
             }
             starterAssetsInputs.Shoot = false;
         }

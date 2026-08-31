@@ -28,12 +28,14 @@ public class DDAController : MonoBehaviour
             Debug.LogWarning("dda_output.json tidak ditemukan, pakai preset Normal default.");
             return new DDAResult { difficulty_level = 1 }; // 1 = normal
         }
+
     }
 
     private void Start()
     {
         DDAResult result = LoadDDAResult();
         ApplyDifficulty(result.difficulty_level);
+        Debug.Log(Application.persistentDataPath);
     }
 
 
